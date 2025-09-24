@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>register_page</title>
+{% endblock %}
+
+{% block body %}
+  <div class = "register">
+    <h1>LOGIN</h1>
+    <form action ="{{url_for('register')}}" method = "POST">
+
+        Name :<input type = "text" name = "username" id ="username" required/>
+        Email :<input type = "email" name = "email" id ="email" required/>
+        Password :<input type = "password" name ="password" id ="password" required/>
+        Role:
+        <select name="role" id="role" required>
+        <option value="student">Student</option>
+        <option value="teacher">Teacher</option>
+        </select>
+
+        <input type = "submit" value = "Register" name ="submit" id ="submit"/>
+        <a href = "{{url_for('login')}}">Already Have an Account?</a>
+    </form>
+
+  </div>
+{% endblock%}
