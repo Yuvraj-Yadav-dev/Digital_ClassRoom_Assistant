@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<h1 align="center">Update Note</h1>
+{% endblock %}
+
+{% block body %}
+<!-- ✅ Flash Messages -->
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class="flashes">
+      {% for msg in messages %}
+        <li style="color: green; font-weight: bold;">{{ msg }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
+<form action="{{ url_for('update_note', note_id=note.id) }}" method="POST" enctype="multipart/form-data" style="max-width: 500px; margin: 0 auto;">
+  <label for="title">Title:</label><br>
+  <input type="text" id="title" name="title" value="{{ note.title }}" required ><br><br>
+  <button type="submit" style="background-color: green; color: white; border: none; padding: 10px 16px; border-radius: 6px;">Update Note</button>
+</form>
+
+<br>
+<a href="{{ url_for('view_class', class_id=note.class_id) }}" style="display:block; text-align:center;">Back to Class</a>
+{% endblock %}

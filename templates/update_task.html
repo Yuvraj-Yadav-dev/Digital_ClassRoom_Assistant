@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<h1 align="center">Update Task</h1>
+{% endblock %}
+
+{% block body %}
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class="flashes">
+      {% for msg in messages %}
+        <li style="color: green; font-weight: bold;">{{ msg }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
+<form action="{{ url_for('update_task', task_id=task.id) }}" method="POST" style="max-width: 500px; margin: 0 auto;">
+  <label for="title">Title:</label><br>
+  <input type="text" id="title" name="title" value="{{ task.title }}" required style="width:100%; padding:8px;"><br><br>
+
+  <label for="description">Description:</label><br>
+  <textarea id="description" name="description" rows="4" style="width:100%; padding:8px;">{{ task.description }}</textarea><br><br>
+
+  <button type="submit" style="background-color: green; color: white; border: none; padding: 10px 16px; border-radius: 6px;">Update Task</button>
+</form>
+
+<br>
+<a href="{{ url_for('view_class', class_id=task.class_id) }}" style="display:block; text-align:center;">Back to Class</a>
+{% endblock %}

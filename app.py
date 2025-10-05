@@ -138,7 +138,6 @@ def create_class():
          return redirect(url_for('dashboard_teacher'))
    return render_template('create_class.html')
 
-
 # uploading notes
 @app.route('/upload_note/<int:class_id>', methods=['GET', 'POST'])
 @login_required
@@ -158,6 +157,46 @@ def upload_note(class_id):
             flash("Note uploaded successfully!")
             return redirect(url_for('view_class', class_id=class_id))
     return render_template('upload_note.html', class_id=class_id)
+
+# Updating the  notes
+@app.route('/update_note/<int:note_id>', methods=['GET', 'POST'])
+@login_required
+def update_note(note_id):
+    note = Notes.query.get_or_404(note_id)
+    cls = Classes.query.get(note.class_id)
+    if current_user.id != cls.teacher_id:
+        flash("You can only edit your own class notes.")
+        return redirect(url_for('view_class', class_id=cls.id))
+
+    if request.method == 'POST':
+        note.title = request.form['title']
+        file = request.files.get('file')
+        if file and file.filename != '':
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            note.filename = filename  # update the filename
+
+        db.session.commit()
+        flash("Note updated successfully!")
+        return redirect(url_for('view_class', class_id=cls.id))
+
+    return render_template('update_note.html', note=note)
+
+# Deleting the notes
+@app.route('/delete_note/<int:note_id>', methods=['POST'])
+@login_required
+def delete_note(note_id):
+    note = Notes.query.get_or_404(note_id)
+    cls = Classes.query.get(note.class_id)
+    
+    if current_user.id != cls.teacher_id:
+        flash("You can only delete your own class notes.")
+        return redirect(url_for('view_class', class_id=cls.id))
+    
+    db.session.delete(note)
+    db.session.commit()
+    flash("Notes deleted successfully.")
+    return redirect(url_for('view_class', class_id=cls.id))
 
 # creating task 
 @app.route('/create_task/<int:class_id>', methods=['GET', 'POST'])
@@ -179,11 +218,60 @@ def create_task(class_id):
         return redirect(url_for('view_class', class_id=class_id))
     return render_template('create_task.html', class_id=class_id)
 
+#updating the task
+@app.route('/update_task/<int:task_id>', methods=['GET', 'POST'])
+@login_required
+def update_task(task_id):
+    task = Tasks.query.get_or_404(task_id)
+    if current_user.role != 'teacher':
+        flash("Access denied.")
+        return redirect(url_for('dashboard_student'))
+
+    if request.method == 'POST':
+        task.title = request.form['title']
+        task.description = request.form['description']
+        task.due_date = request.form['due_date']
+        db.session.commit()
+        flash("Task updated successfully.")
+        return redirect(url_for('view_class', class_id=task.class_id))
+
+    return render_template('update_task.html', task=task)
+
+# Deleting the task
+@app.route('/delete_task/<int:task_id>', methods=['POST'])
+@login_required
+def delete_task(task_id):
+    task = Tasks.query.get_or_404(task_id)
+    cls = Classes.query.get(task.class_id)
+
+    if current_user.id != cls.teacher_id:
+        flash("You are not authorized to delete this task.")
+        return redirect(url_for('view_class', class_id=cls.id))
+
+    if task.filename:
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], task.filename)
+        if os.path.exists(file_path):
+            os.remove(file_path)
+    db.session.delete(task)
+    db.session.commit()
+
+    flash("Task deleted successfully!")
+    return redirect(url_for('view_class', class_id=cls.id))
+
+
+
 #  viewing classes created.
 @app.route('/class/<int:class_id>')
 @login_required
 def view_class(class_id):
     cls = Classes.query.get_or_404(class_id)
+
+    if current_user.role == 'student':
+        membership = ClassMembers.query.filter_by(class_id=class_id, student_id=current_user.id).first()
+        if not membership:
+            flash("You are not a member of this class.")
+            return redirect(url_for('dashboard_student'))
+
     notes = Notes.query.filter_by(class_id=class_id).all()
     tasks = Tasks.query.filter_by(class_id=class_id).all()
     return render_template('view_class.html', cls=cls, notes=notes, tasks=tasks)
@@ -234,6 +322,47 @@ def submit_task(task_id):
             return redirect(url_for('view_class', class_id=Tasks.query.get(task_id).class_id))
     return render_template('submit_task.html', task_id=task_id)
 
+# Deleting the class
+@app.route('/delete_class/<int:class_id>', methods=['POST'])
+@login_required
+def delete_class(class_id):
+    cls = Classes.query.get_or_404(class_id)
+
+    if current_user.id != cls.teacher_id:
+        flash("You are not authorized to delete this class.")
+        return redirect(url_for('view_class', class_id=class_id))
+
+    Notes.query.filter_by(class_id=class_id).delete()
+    tasks = Tasks.query.filter_by(class_id=class_id).all()
+    for task in tasks:
+        TaskSubmissions.query.filter_by(task_id=task.id).delete()
+    Tasks.query.filter_by(class_id=class_id).delete()
+    ClassMembers.query.filter_by(class_id=class_id).delete()
+    db.session.delete(cls)
+    db.session.commit()
+
+    flash("Class deleted successfully!")
+    return redirect(url_for('dashboard_teacher'))
+
+
+# leaving the class (Students)
+@app.route('/leave_class/<int:class_id>', methods=['POST'])
+@login_required
+def leave_class(class_id):
+    if current_user.role != 'student':
+        flash("Only students can leave classes.")
+        return redirect(url_for('dashboard_teacher'))
+    
+    membership = ClassMembers.query.filter_by(student_id=current_user.id, class_id=class_id).first()
+
+    if membership:
+        db.session.delete(membership)
+        db.session.commit()
+        flash("You have left the class.")
+    else:
+        flash("You are not a member of this class.")
+    
+    return redirect(url_for('dashboard_student'))
 
 
 if __name__ == "__main__":
