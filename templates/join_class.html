@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block body %}
+<h2>Join a Class</h2>
+<form method="POST">
+  Enter Class Code: <input type="text" name="class_code" required><br><br>
+  <input type="submit" value="Join">
+</form>
+<a href="{{ url_for('dashboard_student') }}">Back to Dashboard</a>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block body %}
+<h2>Create Task</h2>
+<form method="POST" enctype="multipart/form-data">
+  Title: <input type="text" name="title"><br>
+  Description: <textarea name="description"></textarea><br>
+  File (optional): <input type="file" name="file"><br>
+  <input type="submit" value="Create Task">
+</form>
+<a href="{{ url_for('view_class', class_id=class_id) }}">Back</a>
+{% endblock %}

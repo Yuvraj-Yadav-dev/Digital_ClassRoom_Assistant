@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<h1 align="center">Teacher Dashboard</h1>
+<h2>Profile:</h2>
+<h2>Name: {{ name }}</h2>
+<h2>Email: {{ email }}</h2>
+<h2>Role: {{ role }}</h2>
+
+<h2>Your Classes</h2>
+<a href="{{ url_for('create_class') }}">+ Create New Class</a><br><br>
+
+<h3>Class List</h3>
+<ul>
+  {% for cls in classes %}
+  <li>
+    <a href="{{ url_for('view_class', class_id=cls.id) }}">
+      <strong>{{ cls.class_name }}</strong>
+    </a> Code: <b>{{ cls.class_code }}</b>
+  </li>
+  {% endfor %}
+</ul>
+{% endblock %}
