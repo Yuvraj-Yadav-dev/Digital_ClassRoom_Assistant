@@ -364,6 +364,13 @@ def leave_class(class_id):
     
     return redirect(url_for('dashboard_student'))
 
+from flask import send_from_directory
+
+# To access the uploaded files
+@app.route('/uploads/<filename>')
+@login_required
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 if __name__ == "__main__":
  with app.app_context():

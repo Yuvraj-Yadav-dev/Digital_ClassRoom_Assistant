@@ -14,6 +14,9 @@
   {% for note in notes %}
     <li>
       {{ note.title }}
+       <li>
+      <strong>{{ note.title }}</strong>
+      <a href="{{ url_for('uploaded_file', filename=note.filename) }}">View / Download</a>
       {% if current_user.role == 'teacher' %}
         <a href="{{ url_for('update_note', note_id=note.id) }}">Edit</a>
         <form action="{{ url_for('delete_note', note_id=note.id) }}" method="POST" style="display:inline;">
@@ -31,8 +34,11 @@
 {% if tasks %}
   <ul>
   {% for task in tasks %}
-    <li>
+      <li>
       <strong>{{ task.title }}</strong> - {{ task.description }}
+      {% if task.filename %}
+        <a href="{{ url_for('uploaded_file', filename=task.filename) }}" >View Task File</a>
+      {% endif %}
       {% if current_user.role == 'teacher' %}
         <a href="{{ url_for('update_task', task_id=task.id) }}">Edit</a>
         <form action="{{ url_for('delete_task', task_id=task.id) }}" method="POST" style="display:inline;">
