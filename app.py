@@ -5,12 +5,14 @@ from werkzeug.utils import secure_filename
 import os, random, string
 
 app = Flask(__name__)
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{os.path.join(BASE_DIR, 'database.db')}"
 app.config['SECRET_KEY'] = 'my_secret'
 db = SQLAlchemy(app)
 
-app.config['UPLOAD_FOLDER'] = 'uploads'
+
+app.config['UPLOAD_FOLDER'] = os.path.join(BASE_DIR, 'uploads')
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 
@@ -89,9 +91,7 @@ def login():
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
-
         user = User.query.filter_by(email=email, password=password).first()
-
         if user:
             login_user(user)
             flash("Login Successful")
@@ -223,19 +223,27 @@ def create_task(class_id):
 @login_required
 def update_task(task_id):
     task = Tasks.query.get_or_404(task_id)
-    if current_user.role != 'teacher':
-        flash("Access denied.")
-        return redirect(url_for('dashboard_student'))
+    cls = Classes.query.get(task.class_id)
+    if current_user.id != cls.teacher_id:
+        flash("You are not authorized to edit this task.")
+        return redirect(url_for('view_class', class_id=cls.id))
 
     if request.method == 'POST':
-        task.title = request.form['title']
-        task.description = request.form['description']
-        task.due_date = request.form['due_date']
+        task.title = request.form.get('title', task.title)
+        task.description = request.form.get('description', task.description)
+
+        file = request.files.get('file')
+        if file and file.filename != '':
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            task.filename = filename
+
         db.session.commit()
-        flash("Task updated successfully.")
+        flash("Task updated successfully!")
         return redirect(url_for('view_class', class_id=task.class_id))
 
     return render_template('update_task.html', task=task)
+
 
 # Deleting the task
 @app.route('/delete_task/<int:task_id>', methods=['POST'])
@@ -258,8 +266,6 @@ def delete_task(task_id):
     flash("Task deleted successfully!")
     return redirect(url_for('view_class', class_id=cls.id))
 
-
-
 #  viewing classes created.
 @app.route('/class/<int:class_id>')
 @login_required
@@ -274,7 +280,74 @@ def view_class(class_id):
 
     notes = Notes.query.filter_by(class_id=class_id).all()
     tasks = Tasks.query.filter_by(class_id=class_id).all()
-    return render_template('view_class.html', cls=cls, notes=notes, tasks=tasks)
+
+    task_submissions = {}
+    for task in tasks:
+        submissions = TaskSubmissions.query.filter_by(task_id=task.id).all()
+        submissions_with_names = []
+        for sub in submissions:
+            student = User.query.get(sub.student_id)
+            submissions_with_names.append({'filename': sub.filename, 'student_name': student.username})
+        task_submissions[task.id] = submissions_with_names
+    student_submissions = {}
+    if current_user.role == 'student':
+        for task in tasks:
+            sub = TaskSubmissions.query.filter_by(task_id=task.id, student_id=current_user.id).first()
+            if sub:
+                student_submissions[task.id] = sub
+
+    return render_template('view_class.html', cls=cls, notes=notes, tasks=tasks, task_submissions=task_submissions, student_submissions=student_submissions)
+
+# Edit submission
+@app.route('/edit_submission/<int:submission_id>', methods=['GET', 'POST'])
+@login_required
+def edit_submission(submission_id):
+    submission = TaskSubmissions.query.get_or_404(submission_id)
+    
+    if submission.student_id != current_user.id:
+        flash("You are not authorized to edit this submission.")
+        return redirect(url_for('dashboard_student'))
+
+    # fetch the related task
+    task = Tasks.query.get(submission.task_id)
+    
+    if request.method == 'POST':
+        file = request.files.get('file')
+        if file:
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            submission.filename = filename
+            db.session.commit()
+            flash("Submission updated successfully!")
+            return redirect(url_for('view_class', class_id=task.class_id))
+
+    # pass both submission and task to template
+    return render_template('edit_submission.html', submission=submission, task=task)
+
+
+
+# Delete submission
+@app.route('/delete_submission/<int:submission_id>', methods=['POST'])
+@login_required
+def delete_submission(submission_id):
+    submission = TaskSubmissions.query.get_or_404(submission_id)
+
+    if submission.student_id != current_user.id:
+        flash("You are not authorized to delete this submission.")
+        return redirect(url_for('dashboard_student'))
+
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], submission.filename)
+    if os.path.exists(file_path):
+        os.remove(file_path)
+
+    db.session.delete(submission)
+    db.session.commit()
+    flash("Submission deleted successfully!")
+
+    task = Tasks.query.get(submission.task_id)
+    return redirect(url_for('view_class', class_id=task.class_id))
+
+
 
 # joining the classes created.
 @app.route('/join_class', methods=['GET', 'POST'])
@@ -289,7 +362,7 @@ def join_class():
         cls = Classes.query.filter_by(class_code=class_code).first()
         if not cls:
             flash("Invalid class code.")
-            return redirect(url_for('join_class'))
+            return redirect(url_for('dashboard_student'))
         already = ClassMembers.query.filter_by(student_id=current_user.id, class_id=cls.id).first()
         if already:
             flash("You have already joined this class.")
@@ -303,24 +376,36 @@ def join_class():
 
     return render_template('join_class.html')
 
-# submitting the task 
+#submitting the task.
 @app.route('/submit_task/<int:task_id>', methods=['GET', 'POST'])
 @login_required
 def submit_task(task_id):
+    task = Tasks.query.get_or_404(task_id)
+
     if current_user.role != 'student':
         flash("Only students can submit tasks.")
         return redirect(url_for('dashboard_teacher'))
+
     if request.method == 'POST':
-        file = request.files['file']
+        file = request.files.get('file')
         if file:
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            submission = TaskSubmissions(task_id=task_id, student_id=current_user.id, filename=filename)
+
+            submission = TaskSubmissions(
+                task_id=task.id,
+                student_id=current_user.id,
+                filename=filename
+            )
             db.session.add(submission)
             db.session.commit()
             flash("Task submitted successfully!")
-            return redirect(url_for('view_class', class_id=Tasks.query.get(task_id).class_id))
-    return render_template('submit_task.html', task_id=task_id)
+            return redirect(url_for('view_class', class_id=task.class_id))
+
+    submissions = TaskSubmissions.query.filter_by(task_id=task.id, student_id=current_user.id).all()
+    return render_template('submit_task.html', task_id=task.id, submissions=submissions)
+
+
 
 # Deleting the class
 @app.route('/delete_class/<int:class_id>', methods=['POST'])
@@ -371,6 +456,13 @@ from flask import send_from_directory
 @login_required
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('You have been logged out successfully.')
+    return redirect(url_for('login'))
 
 if __name__ == "__main__":
  with app.app_context():

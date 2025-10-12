@@ -2,22 +2,40 @@
 
 {% block head %}
 <h1 align="center">Teacher Dashboard</h1>
-<h2>Profile:</h2>
-<h2>Name: {{ name }}</h2>
-<h2>Email: {{ email }}</h2>
-<h2>Role: {{ role }}</h2>
+<link rel="stylesheet" href="{{ url_for('static', filename='teacher_dashboard.css') }}">
+{% endblock %}
 
-<h2>Your Classes</h2>
-<a href="{{ url_for('create_class') }}">+ Create New Class</a><br><br>
+{% block body %}
 
-<h3>Class List</h3>
-<ul>
-  {% for cls in classes %}
-  <li>
-    <a href="{{ url_for('view_class', class_id=cls.id) }}">
-      <strong>{{ cls.class_name }}</strong>
-    </a> Code: <b>{{ cls.class_code }}</b>
-  </li>
-  {% endfor %}
-</ul>
+<div class="teacher-dashboard">
+  <div class="profile-circle">
+    <h2>Profile</h2>
+    <p><l style = color:black>Name:</l> {{ name }}</p>
+    <p><l style = color:black>Email:</l> {{ email }}</p>
+    <p><l style = color:black>Role:</l> {{ role }}</p>
+    <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+  </div>
+
+  <div class="actions">
+    <a href="{{ url_for('create_class') }}" class="create-btn">+ Create Class</a>
+  </div>
+<div class="class-section">
+  <h3>Class List</h3>
+  {% if classes %}
+    <ul class="class-list">
+      {% for cls in classes %}
+      <li>
+        <a href="{{ url_for('view_class', class_id=cls.id) }}">
+          <strong>{{ cls.class_name }}</strong>
+        </a>
+        <span><strong>Code:</strong> {{ cls.class_code }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="no-class">No classes created yet. Click "Create Class" to get started!</p>
+  {% endif %}
+</div>
+  </div>
+</div>
 {% endblock %}

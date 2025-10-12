@@ -2,35 +2,44 @@
 
 {% block head %}
 <h1 align="center">Student Dashboard</h1>
+<link rel="stylesheet" href="{{ url_for('static', filename='student_dashboard.css') }}">
+{% endblock %}
 
-<h2>Profile</h2>
-<p><strong>Name:</strong> {{ current_user.username }}</p>
-<p><strong>Email:</strong> {{ current_user.email }}</p>
-<p><strong>Role:</strong> {{ current_user.role }}</p>
+{% block body %}
 
-<hr>
 
-<h2>Join a Class</h2>
-<form method="POST" action="{{ url_for('join_class') }}">
-    <label for="class_code">Enter Class Code:</label>
-    <input type="text" id="class_code" name="class_code" required>
-    <input type="submit" value="Join Class">
-</form>
 
-<hr>
+<div class="dashboard-container">
 
-<h2>My Classes</h2>
-{% if classes %}
-<ul>
-  {% for cls in classes %}
-  <li>
-    <a href="{{ url_for('view_class', class_id=cls.id) }}">{{ cls.class_name }}</a>
-  </li>
-  {% endfor %}
-</ul>
-{% else %}
-<p>You haven’t joined any classes yet.</p>
-{% endif %}
+   <div class="profile-circle">
+    <h2>Profile</h2>
+    <p><l style = color:black>Name:</l> {{ name }}</p>
+    <p><l style = color:black>Email:</l> {{ email }}</p>
+    <p><l style = color:black>Role:</l> {{ role }}</p>
+    <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+  </div>
 
+  <div class="section">
+    <h2>Join a Class</h2>
+    <form method="POST" action="{{ url_for('join_class') }}">
+      <label for="class_code">Enter Class Code:</label>
+      <input type="text" id="class_code" name="class_code" required>
+      <input type="submit" value="Join Class">
+    </form>
+  </div>
+
+  <div class="section">
+    <h2>My Classes</h2>
+    {% if classes %}
+      <ul class="class-list">
+        {% for cls in classes %}
+          <li><a href="{{ url_for('view_class', class_id=cls.id) }}">{{ cls.class_name }}</a></li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>You haven’t joined any classes yet.</p>
+    {% endif %}
+  </div>
+</div>
 
 {% endblock %}

@@ -2,6 +2,7 @@
 
 {% block head %}
 <h1 align="center">Update Task</h1>
+<link rel="stylesheet" href="{{ url_for('static', filename='update_task.css') }}">
 {% endblock %}
 
 {% block body %}
@@ -21,6 +22,9 @@
 
   <label for="description">Description:</label><br>
   <textarea id="description" name="description" rows="4" style="width:100%; padding:8px;">{{ task.description }}</textarea><br><br>
+   
+  <label>Replace File (optional):</label><br>
+  <input type="file" name="file"><br><br>
 
   <button type="submit" style="background-color: green; color: white; border: none; padding: 10px 16px; border-radius: 6px;">Update Task</button>
 </form>

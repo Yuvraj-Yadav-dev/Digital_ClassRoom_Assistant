@@ -1,0 +1,90 @@
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f4f6f8;
+    margin: 0;
+    padding: 0;
+}
+
+/* Dashboard container */
+.dashboard-container {
+    width: 90%;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding-top: 80px; /* space for profile circle */
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.profile-circle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 180px;
+  height: 180px;
+  background-color: #4caf50;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  z-index: 100;
+}
+
+.profile-circle h2 {
+  margin: 8px 0;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.profile-circle p{
+  margin: 4px 0;
+  font-size: 14px;
+}
+.profile-circle a{
+  margin-top: 12px;           
+  font-size: 16px;            
+  background-color: #f44336;  
+  color: white;
+  padding: 6px 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.profile-circle .logout-btn:hover {
+  background-color: #d32f2f;
+}
+
+
+/* Sections styling */
+.section {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+/* Class list */
+.class-list {
+    list-style: none;
+    padding: 0;
+}
+
+.class-list li {
+    padding: 8px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.class-list li a {
+    text-decoration: none;
+    color: #333;
+}
+
+.class-list li a:hover {
+    color: #4caf50;
+}

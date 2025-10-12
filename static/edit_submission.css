@@ -1,0 +1,75 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f6f8;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+.edit-container {
+    max-width: 600px;
+    margin: 50px auto;
+    background: #fff;
+    padding: 25px 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+h2 {
+    font-size: 1.8em;
+    margin-bottom: 20px;
+    color: #222;
+}
+
+label {
+    font-weight: 500;
+}
+
+input[type="file"] {
+    margin-top: 8px;
+    margin-bottom: 15px;
+}
+
+.btn {
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.95em;
+    cursor: pointer;
+    border: none;
+    margin-right: 10px;
+}
+
+.submit-btn {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.submit-btn:hover {
+    background-color: #1e7e34;
+}
+
+.delete-btn {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+.delete-btn:hover {
+    background-color: #b02a37;
+}
+
+.back-link {
+    display: inline-block;
+    margin-top: 20px;
+    text-decoration: none;
+    color: #007bff;
+    font-weight: 500;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+p {
+    margin-bottom: 15px;
+}

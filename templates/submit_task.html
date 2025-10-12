@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Submit Task</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='submit_task.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="submit-task-container">
+    <h2>Submit Task</h2>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul class="flash-messages">
+          {% for msg in messages %}
+            <li>{{ msg }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <form action="{{ url_for('submit_task', task_id=task_id) }}" method="POST" enctype="multipart/form-data">
+        <label for="file">Upload your task file:</label><br>
+        <input type="file" name="file" id="file" required><br><br>
+        <button type="submit">Submit</button>
+    </form>
+
+    {% if submissions %}
+        <h3>Your Previous Submissions:</h3>
+        <ul class="submission-list">
+            {% for sub in submissions %}
+                <li>
+                    <a href="{{ url_for('uploaded_file', filename=sub.filename) }}" target="_blank">{{ sub.filename }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <br>
+    <a href="{{ url_for('dashboard_student') }}" class="back-btn">Back to Dashboard</a>
+</div>
+{% endblock %}

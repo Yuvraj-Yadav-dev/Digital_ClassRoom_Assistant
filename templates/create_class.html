@@ -2,6 +2,9 @@
 
 {% block head %}
 <h2>Create Class</h2>
+<link rel="stylesheet" href="{{ url_for('static', filename='create_class.css') }}">
+{%endblock%}
+{%block body%}
 <form method="POST">
 Class Name: <input type="text" name="class_name"><br>
 <input type="submit" value="Create">

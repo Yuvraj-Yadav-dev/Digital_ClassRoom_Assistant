@@ -2,22 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    
-    {% block head %} {% endblock %}
+    <title>{% block title %}Digital ClassRoom Assistant{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    {% block head %}{% endblock %}
 </head>
 <body>
-    {% with messages = get_flashed_messages() %}
-  {% if messages %}
-    <ul class="flashes">
-      {% for msg in messages %}
-        <li style="color: green; font-weight: bold;">{{ msg }}</li>
-      {% endfor %}
-    </ul>
-  {% endif %}
-{% endwith %}
-    {% block body %}
- {% endblock %}
+    {% block body %}{% endblock %}
+    <div class="flash-container">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for msg in messages %}
+                    <div class="flash-msg">{{ msg }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
 </body>
 </html>

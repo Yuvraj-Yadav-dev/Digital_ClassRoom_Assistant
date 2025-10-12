@@ -2,10 +2,10 @@
 
 {% block head %}
 <h1 align="center">Update Note</h1>
+<link rel="stylesheet" href="{{ url_for('static', filename='update_note.css') }}">
 {% endblock %}
 
 {% block body %}
-<!-- ✅ Flash Messages -->
 {% with messages = get_flashed_messages() %}
   {% if messages %}
     <ul class="flashes">
@@ -19,6 +19,11 @@
 <form action="{{ url_for('update_note', note_id=note.id) }}" method="POST" enctype="multipart/form-data" style="max-width: 500px; margin: 0 auto;">
   <label for="title">Title:</label><br>
   <input type="text" id="title" name="title" value="{{ note.title }}" required ><br><br>
+  <label for="file">Update File (optional):</label><br>
+  <input type="file" id="file" name="file" accept=".pdf,.doc,.docx,.jpg,.png"><br>
+  {% if note.filename %}
+    <p>Current file: <a href="{{ url_for('uploaded_file', filename=note.filename) }}" target="_blank">{{ note.filename }}</a></p>
+  {% endif %}
   <button type="submit" style="background-color: green; color: white; border: none; padding: 10px 16px; border-radius: 6px;">Update Note</button>
 </form>
 

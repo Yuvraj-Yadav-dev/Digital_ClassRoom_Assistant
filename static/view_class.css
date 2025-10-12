@@ -1,0 +1,167 @@
+.class-container {
+    width: 90%;
+    max-width: 1000px;
+    margin: 30px auto;
+    padding: 25px 30px;
+    background-color: #fdfdfd;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.back-arrow {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    text-decoration: none;
+    font-weight: bold;
+    color: #007bff;
+    font-size: 1.1em;
+}
+
+.back-arrow:hover {
+    text-decoration: underline;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.section-header h3 {
+    margin: 0;
+    color: #333;
+}
+
+.btn {
+    padding: 6px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.upload-note-btn {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.create-task-btn {
+    background-color: #17a2b8;
+    color: #fff;
+}
+
+.submit-task-btn {
+    display: inline-block;
+    width:auto;
+}
+
+.upload-note-btn:hover,
+.create-task-btn:hover,
+.submit-task-btn:hover {
+    opacity: 0.85;
+}
+.edit-link {
+    margin-left: 10px;
+    color: #007bff;
+    text-decoration: none;
+}
+
+.edit-link:hover {
+    text-decoration: underline;
+}
+
+.delete-btn {
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 5px;
+}
+
+.delete-btn:hover {
+    opacity: 0.85;
+}
+
+
+.notes-list, .tasks-list {
+    list-style-type: none;
+    padding-left: 0;
+    margin-top: 10px;
+}
+
+.notes-list li, .tasks-list li {
+    background-color: #f8f9fa;
+    margin-bottom: 10px;
+    padding: 12px 15px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+}
+
+
+.view-link {
+    margin-left: 10px;
+    color: #17a2b8;
+    text-decoration: none;
+}
+
+.view-link:hover {
+    text-decoration: underline;
+}
+
+
+.submission-list {
+    list-style-type: none;
+    padding-left: 15px;
+    margin-top: 8px;
+}
+
+.submission-list li {
+    padding: 5px 0;
+    font-size: 14px;
+}
+
+.leave-btn, .delete-class-btn {
+    padding: 8px 14px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 15px;
+}
+
+.leave-btn {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+.leave-btn:hover {
+    opacity: 0.9;
+}
+
+.delete-class-btn {
+    background-color: #343a40;
+    color: #fff;
+}
+
+.delete-class-btn:hover {
+    opacity: 0.9;
+}
+
+@media (max-width: 600px) {
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .btn {
+        margin-top: 8px;
+    }
+}
