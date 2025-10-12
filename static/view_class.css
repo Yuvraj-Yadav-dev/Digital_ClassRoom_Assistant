@@ -1,9 +1,14 @@
+body{
+    margin:0;
+    padding:0;
+    background: #8db8d4 ;
+}
 .class-container {
     width: 90%;
     max-width: 1000px;
     margin: 30px auto;
     padding: 25px 30px;
-    background-color: #fdfdfd;
+    background-color: #bcd3e5;
     border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
