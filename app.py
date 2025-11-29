@@ -16,7 +16,7 @@ app.config['UPLOAD_FOLDER'] = os.path.join(BASE_DIR, 'uploads')
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 
-login_manager = LoginManager()
+login_manager = LoginManager() 
 login_manager.init_app(app)
 login_manager.login_view = "login"
 
@@ -73,7 +73,7 @@ def register():
       email = request.form['email']
       password = request.form['password']
       role = request.form['role']
-
+ 
       existing_user = User.query.filter_by(email=email).first()
       if existing_user:
          flash("Email already registered!. Use another.")
@@ -108,7 +108,7 @@ def login():
      
 # dashboard of Teacher and Student.
 @app.route('/dashboard_teacher')
-@login_required
+@login_required #necessary
 def dashboard_teacher():
    if current_user.role == 'teacher':
       flash("Welcome!!")   
@@ -383,7 +383,7 @@ def submit_task(task_id):
     task = Tasks.query.get_or_404(task_id)
 
     if current_user.role != 'student':
-        flash("Only students can submit tasks.")
+        flash("Only stude nts can submit tasks.")
         return redirect(url_for('dashboard_teacher'))
 
     if request.method == 'POST':
@@ -465,5 +465,6 @@ def logout():
     return redirect(url_for('login'))
 
 if __name__ == "__main__":
- with app.app_context():
-     db.create_all()
+    with app.app_context():
+        db.create_all()
+    app.run(debug=True)
