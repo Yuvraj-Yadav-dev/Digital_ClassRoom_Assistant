@@ -1,4 +1,4 @@
-🎓 Classroom Management System
+🎓 DIGITAL CLASSROOM ASSISTANT
 
 Web-Based Classroom Platform Built with Flask (Semester Project – Group of 4)
 
